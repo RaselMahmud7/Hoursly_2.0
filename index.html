@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoursly - Time Tracking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-clock text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-semibold text-gray-900">Hoursly</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <button id="accountBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Message -->
+        <div class="text-center mb-8">
+            <p class="text-gray-600 mb-4">Start logging and stay in control with Hoursly!</p>
+            
+            <!-- Pay Period Summary -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-600">Pay Period Start Day:</span>
+                    <div class="flex items-center">
+                        <span id="payPeriodDay" class="mr-2">20</span>
+                        <button id="editPayPeriod" class="text-teal-500 hover:text-teal-600 text-sm">Edit</button>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div id="payPeriodRange" class="text-gray-500 text-sm mb-2">20 Jul - 19 Aug</div>
+                    <div class="text-3xl font-bold text-gray-900 mb-1">
+                        <span id="totalHours">0</span> Hours : <span id="totalMinutes">00</span> Minutes
+                    </div>
+                    <div class="text-gray-500 text-sm">Current pay period summary</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Entry Form -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <form id="timeEntryForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Date -->
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700 mb-2">Date:</label>
+                        <input type="date" id="date" name="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent" required>
+                    </div>
+
+                    <!-- Break -->
+                    <div>
+                        <label for="break" class="block text-sm font-medium text-gray-700 mb-2">Break:</label>
+                        <input type="number" id="break" name="break" placeholder="0" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Start Time -->
+                    <div>
+                        <label for="startTime" class="block text-sm font-medium text-gray-700 mb-2">Start Time:</label>
+                        <div class="relative">
+                            <input type="time" id="startTime" name="startTime" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent" required>
+                            <i class="fas fa-clock absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <!-- End Time -->
+                    <div>
+                        <label for="endTime" class="block text-sm font-medium text-gray-700 mb-2">End Time:</label>
+                        <div class="relative">
+                            <input type="time" id="endTime" name="endTime" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent" required>
+                            <i class="fas fa-clock absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="md:col-span-2">
+                        <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location:</label>
+                        <div class="relative">
+                            <input type="text" id="location" name="location" placeholder="Work location" class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                            <i class="fas fa-map-marker-alt absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Overnight Work -->
+                    <div class="md:col-span-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="overnight" name="overnight" class="rounded border-gray-300 text-teal-500 focus:ring-teal-500 focus:ring-offset-0">
+                            <span class="ml-2 text-sm text-gray-700">Overnight work (next day)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-6">
+                    <button type="submit" class="w-full bg-teal-500 text-white py-3 px-4 rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition duration-200">
+                        <i class="fas fa-plus mr-2"></i>
+                        Add Entry
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- View Entries Button -->
+        <div class="text-center">
+            <button id="viewEntriesBtn" class="bg-white text-gray-700 py-3 px-6 rounded-md border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition duration-200">
+                <i class="fas fa-eye mr-2"></i>
+                View Entries
+            </button>
+        </div>
+    </div>
+
+    <!-- Account Sidebar -->
+    <div id="accountSidebar" class="fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h2 class="text-lg font-semibold text-gray-900">
+                <i class="fas fa-user mr-2"></i>
+                Account
+            </h2>
+            <button id="closeSidebar" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="p-6">
+            <!-- User Info -->
+            <div class="bg-teal-50 rounded-lg p-4 mb-6">
+                <div class="text-sm text-gray-600 mb-1">Logged in as</div>
+                <div class="font-semibold text-gray-900" id="userName">Rasel</div>
+                <div class="text-sm text-gray-600" id="userEmail">r.mahmud2207@gmail.com</div>
+            </div>
+
+            <!-- Integrations -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-900 mb-4">Integrations</h3>
+                
+                <!-- Google Sheets -->
+                <div class="flex items-center justify-between p-3 border rounded-lg mb-3">
+                    <div class="flex items-center">
+                        <i class="fab fa-google text-green-500 mr-3"></i>
+                        <div>
+                            <div class="font-medium text-gray-900">Google Sheets</div>
+                            <div class="text-xs text-gray-500">Connect to save your timesheet data to Google Sheets automatically</div>
+                        </div>
+                    </div>
+                    <button class="text-sm text-teal-500 hover:text-teal-600">Connect</button>
+                </div>
+
+                <!-- Google Login -->
+                <div class="flex items-center justify-between p-3 border rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fab fa-google text-blue-500 mr-3"></i>
+                        <div>
+                            <div class="font-medium text-gray-900">Google Login</div>
+                            <div class="text-xs text-gray-500">Sign in with your Google account for easier access</div>
+                        </div>
+                    </div>
+                    <button class="text-sm text-teal-500 hover:text-teal-600">Enable</button>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-900 mb-4">Settings</h3>
+                <button class="w-full flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                    <i class="fas fa-cog text-gray-500 mr-3"></i>
+                    <span class="text-gray-700">App Settings</span>
+                </button>
+            </div>
+
+            <!-- Logout -->
+            <button id="logoutBtn" class="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
