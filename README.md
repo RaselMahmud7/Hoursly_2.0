@@ -1,6 +1,6 @@
 # Hoursly - Time Tracking Web Application
 
-A modern, responsive time tracking web application built with HTML, Tailwind CSS, JavaScript, and Node.js with SQLite database.
+A modern, responsive time tracking web application that stores each user's data in their own Google Sheet. Built with HTML, Tailwind CSS, JavaScript, and Google Sheets API - no backend server required!
 
 ## Features
 
@@ -11,7 +11,9 @@ A modern, responsive time tracking web application built with HTML, Tailwind CSS
 - 📤 **Export Options**: Export data to CSV and print as PDF
 - 🌙 **Overnight Work Support**: Handle overnight shifts automatically
 - 📱 **Responsive Design**: Works on desktop, tablet, and mobile devices
-- 👤 **User Account Management**: Basic user settings and integrations panel
+- 👤 **Personal Data Ownership**: Each user's data stored in their own Google Sheet
+- 🔒 **Privacy First**: No backend server - your data stays with you
+- ☁️ **Google Drive Integration**: Access your timesheet directly in Google Sheets
 
 ## Technology Stack
 
@@ -22,82 +24,62 @@ A modern, responsive time tracking web application built with HTML, Tailwind CSS
 - **Font Awesome**: Icon library for UI elements
 
 ### Backend
-- **Node.js**: JavaScript runtime for server-side development
-- **Express.js**: Web framework for API endpoints
-- **SQLite3**: Lightweight database for data persistence
-- **CORS**: Cross-origin resource sharing support
+- **Google Sheets API**: Cloud-based data storage and synchronization
+- **Google OAuth 2.0**: Secure user authentication
+- **Client-side only**: No server required - runs entirely in the browser
+- **LocalStorage**: Offline demo mode fallback
 
 ## Project Structure
 
 ```
 Hoursly 2.0/
-├── index.html          # Main dashboard page
-├── entries.html        # Work entries listing page
-├── script.js           # Main dashboard JavaScript
-├── entries.js          # Entries page JavaScript
-├── server.js           # Express server and API routes
-├── init-db.js          # Database initialization script
-├── package.json        # Node.js dependencies and scripts
-├── hoursly.db          # SQLite database file (created after setup)
-└── README.md           # This file
+├── index.html              # Main dashboard page
+├── entries.html            # Work entries listing page
+├── script-sheets.js        # Main dashboard JavaScript (Google Sheets)
+├── entries-sheets.js       # Entries page JavaScript (Google Sheets)
+├── sheets-api.js           # Google Sheets API integration
+├── config.js               # Google API configuration
+├── setup-google-sheets.md  # Google Sheets setup guide
+├── auth.js                 # Authentication utilities (optional)
+├── login.html              # Login page (optional)
+├── signup.html             # Signup page (optional)
+└── README.md               # This file
 ```
 
 ## Setup Instructions
 
-### Prerequisites
+### Option 1: Quick Demo (No Setup Required)
 
-- **Node.js** (version 14 or higher)
-- **npm** (comes with Node.js)
+1. **Download the project** files to your computer
+2. **Open `index.html`** in any modern web browser
+3. **Use Demo Mode** - data will be stored locally in your browser
+4. **Start tracking time** immediately!
 
-### Installation
+### Option 2: Google Sheets Integration (Recommended)
 
-1. **Clone or download the project** to your local machine
+1. **Follow the [Google Sheets Setup Guide](setup-google-sheets.md)** (5 minutes)
+2. **Update `config.js`** with your Google API credentials
+3. **Open `index.html`** in your browser
+4. **Connect to Google Sheets** - your data will be stored in your Google Drive
 
-2. **Open terminal/command prompt** and navigate to the project directory:
-   ```bash
-   cd "Hoursly 2.0"
-   ```
+### No Server Required!
 
-3. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+This application runs entirely in your browser - no backend server, no database installation, no complex setup!
 
-4. **Initialize the database**:
-   ```bash
-   npm run init-db
-   ```
+## How It Works
 
-5. **Start the server**:
-   ```bash
-   npm start
-   ```
+### Google Sheets Integration
 
-   For development with auto-restart:
-   ```bash
-   npm run dev
-   ```
+1. **Authentication**: Users sign in with their Google account
+2. **Automatic Setup**: App creates a personalized timesheet in their Google Drive
+3. **Real-time Sync**: All changes are instantly saved to their Google Sheet
+4. **Data Ownership**: Users own and control their data completely
 
-6. **Open your browser** and navigate to:
-   ```
-   http://localhost:3000
-   ```
+### Demo Mode
 
-## API Endpoints
-
-The application provides a REST API with the following endpoints:
-
-### Work Entries
-- `GET /api/entries` - Get all work entries
-- `GET /api/entries?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD` - Get filtered entries
-- `GET /api/entries/summary?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD` - Get hours summary
-- `POST /api/entries` - Create new entry
-- `PUT /api/entries/:id` - Update existing entry
-- `DELETE /api/entries/:id` - Delete entry
-
-### User Settings
-- `GET /api/user` - Get user information
-- `PUT /api/user` - Update user settings
+- **Local Storage**: Data stored in browser's localStorage
+- **No Account Required**: Perfect for testing or personal use
+- **Instant Setup**: No configuration needed
 
 ## Usage Guide
 
