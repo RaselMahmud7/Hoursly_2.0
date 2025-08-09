@@ -11,10 +11,12 @@ class HourslyApp {
     }
 
     init() {
+        this.checkAuthentication();
         this.setupEventListeners();
         this.setDefaultDate();
         this.updatePayPeriodSummary();
         this.loadPayPeriodSummary();
+        this.loadUserInfo();
     }
 
     setupEventListeners() {
@@ -27,6 +29,12 @@ class HourslyApp {
         // Navigation
         document.getElementById('viewEntriesBtn').addEventListener('click', () => {
             window.location.href = 'entries.html';
+        });
+
+        // Hamburger menu
+        const hamburgerBtn = document.querySelector('.fa-bars').parentElement;
+        hamburgerBtn.addEventListener('click', () => {
+            this.toggleMobileMenu();
         });
 
         // Account sidebar
@@ -211,11 +219,126 @@ class HourslyApp {
 
     logout() {
         if (confirm('Are you sure you want to logout?')) {
-            // Clear any stored data
-            localStorage.clear();
-            // Redirect to login page or refresh
-            window.location.reload();
+            // Use AuthManager logout
+            if (typeof AuthManager !== 'undefined') {
+                AuthManager.logout();
+            } else {
+                // Fallback
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = 'login.html';
+            }
         }
+    }
+
+    checkAuthentication() {
+        const userData = localStorage.getItem('hoursly_user') || sessionStorage.getItem('hoursly_user');
+        if (!userData) {
+            window.location.href = 'login.html';
+            return;
+        }
+        this.currentUser = JSON.parse(userData);
+    }
+
+    loadUserInfo() {
+        if (this.currentUser) {
+            document.getElementById('userName').textContent = this.currentUser.name;
+            document.getElementById('userEmail').textContent = this.currentUser.email;
+        }
+    }
+
+    toggleMobileMenu() {
+        // Create mobile menu if it doesn't exist
+        let mobileMenu = document.getElementById('mobileMenu');
+        
+        if (!mobileMenu) {
+            mobileMenu = this.createMobileMenu();
+        }
+        
+        // Toggle visibility
+        if (mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.remove('hidden');
+            document.getElementById('overlay').classList.remove('hidden');
+        } else {
+            mobileMenu.classList.add('hidden');
+            document.getElementById('overlay').classList.add('hidden');
+        }
+    }
+
+    createMobileMenu() {
+        const mobileMenu = document.createElement('div');
+        mobileMenu.id = 'mobileMenu';
+        mobileMenu.className = 'fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 hidden';
+        
+        mobileMenu.innerHTML = `
+            <div class="flex justify-between items-center p-6 border-b">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-clock text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-semibold text-gray-900">Hoursly</span>
+                </div>
+                <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="p-6">
+                <ul class="space-y-4">
+                    <li>
+                        <a href="index.html" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition duration-200">
+                            <i class="fas fa-home mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="entries.html" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition duration-200">
+                            <i class="fas fa-list mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">Work Entries</span>
+                        </a>
+                    </li>
+                    <li>
+                        <button id="mobileAccountBtn" class="w-full flex items-center p-3 rounded-lg hover:bg-gray-100 transition duration-200 text-left">
+                            <i class="fas fa-user mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">Account</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button id="mobileLogoutBtn" class="w-full flex items-center p-3 rounded-lg hover:bg-red-50 transition duration-200 text-left text-red-600">
+                            <i class="fas fa-sign-out-alt mr-3"></i>
+                            <span>Logout</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        `;
+        
+        document.body.appendChild(mobileMenu);
+        
+        // Add event listeners
+        document.getElementById('closeMobileMenu').addEventListener('click', () => {
+            this.closeMobileMenu();
+        });
+        
+        document.getElementById('mobileAccountBtn').addEventListener('click', () => {
+            this.closeMobileMenu();
+            this.toggleAccountSidebar();
+        });
+        
+        document.getElementById('mobileLogoutBtn').addEventListener('click', () => {
+            this.closeMobileMenu();
+            this.logout();
+        });
+        
+        return mobileMenu;
+    }
+
+    closeMobileMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileMenu) {
+            mobileMenu.classList.add('hidden');
+        }
+        document.getElementById('overlay').classList.add('hidden');
     }
 
     showNotification(message, type = 'info') {

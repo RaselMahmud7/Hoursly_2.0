@@ -48,7 +48,106 @@ function calculateHours(startTime, endTime, breakMinutes, overnight = false) {
     return Math.max(0, totalMinutes); // Ensure non-negative
 }
 
-// Routes
+// Authentication Routes
+
+// Login endpoint
+app.post('/api/auth/login', (req, res) => {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+        res.status(400).json({ error: 'Email and password are required' });
+        return;
+    }
+    
+    // Demo account
+    if (email === 'demo@hoursly.com' && password === 'demo123') {
+        res.json({
+            user: {
+                id: 1,
+                name: 'Demo User',
+                email: 'demo@hoursly.com'
+            }
+        });
+        return;
+    }
+    
+    // Check database for user
+    const query = `SELECT * FROM users WHERE email = ?`;
+    
+    db.get(query, [email], (err, row) => {
+        if (err) {
+            console.error('Login error:', err.message);
+            res.status(500).json({ error: 'Login failed' });
+            return;
+        }
+        
+        if (!row) {
+            res.status(401).json({ error: 'Invalid credentials' });
+            return;
+        }
+        
+        // In production, you'd verify password hash here
+        // For now, just check if password matches (not secure)
+        if (row.password && row.password === password) {
+            res.json({
+                user: {
+                    id: row.id,
+                    name: row.name,
+                    email: row.email
+                }
+            });
+        } else {
+            res.status(401).json({ error: 'Invalid credentials' });
+        }
+    });
+});
+
+// Signup endpoint
+app.post('/api/auth/signup', (req, res) => {
+    const { name, email, password, payPeriodStartDay } = req.body;
+    
+    if (!name || !email || !password) {
+        res.status(400).json({ error: 'Name, email, and password are required' });
+        return;
+    }
+    
+    // Check if user already exists
+    const checkQuery = `SELECT id FROM users WHERE email = ?`;
+    
+    db.get(checkQuery, [email], (err, row) => {
+        if (err) {
+            console.error('Signup check error:', err.message);
+            res.status(500).json({ error: 'Signup failed' });
+            return;
+        }
+        
+        if (row) {
+            res.status(400).json({ error: 'User already exists' });
+            return;
+        }
+        
+        // Create new user
+        const insertQuery = `INSERT INTO users (name, email, password, pay_period_start_day) VALUES (?, ?, ?, ?)`;
+        
+        db.run(insertQuery, [name, email, password, payPeriodStartDay || 20], function(err) {
+            if (err) {
+                console.error('User creation error:', err.message);
+                res.status(500).json({ error: 'Failed to create user' });
+                return;
+            }
+            
+            res.status(201).json({
+                user: {
+                    id: this.lastID,
+                    name,
+                    email
+                }
+            });
+        });
+    });
+});
+
+// Work Entry Routes
 
 // Get all work entries
 app.get('/api/entries', (req, res) => {
@@ -253,6 +352,14 @@ app.put('/api/user', (req, res) => {
 // Serve main pages
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/signup', (req, res) => {
+    res.sendFile(path.join(__dirname, 'signup.html'));
 });
 
 app.get('/entries', (req, res) => {

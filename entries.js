@@ -8,6 +8,7 @@ class EntriesPage {
     }
 
     init() {
+        this.checkAuthentication();
         this.setupEventListeners();
         this.loadEntries();
         this.setDefaultDateRange();
@@ -359,6 +360,15 @@ class EntriesPage {
     showEmptyState() {
         document.getElementById('entriesTableBody').innerHTML = '';
         document.getElementById('emptyState').classList.remove('hidden');
+    }
+
+    checkAuthentication() {
+        const userData = localStorage.getItem('hoursly_user') || sessionStorage.getItem('hoursly_user');
+        if (!userData) {
+            window.location.href = 'login.html';
+            return;
+        }
+        this.currentUser = JSON.parse(userData);
     }
 
     showNotification(message, type = 'info') {
